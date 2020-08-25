@@ -45,6 +45,34 @@ app.post("/api/getFreeboardData", async (req, res) => {
   }
 });
 
+app.post("/api/getDocsboardData", async (req, res) => {
+  try {
+    let sendData = [];
+
+    await firestore
+      .collection("Boards")
+      .where("type", "==", "docs")
+      .where("isdelete", "==", false)
+      .get()
+      .then((response) =>
+        response.forEach((doc) => {
+          sendData.push({
+            refkey: doc.id,
+            title: doc.data().title,
+            author: doc.data().author,
+            registDate: doc.data().registDate,
+            hit: doc.data().hit,
+          });
+        })
+      );
+
+    return res.json(sendData);
+  } catch (e) {
+    console.log(e);
+    return [];
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server start http://localhost:${PORT}`);
 });

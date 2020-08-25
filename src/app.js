@@ -17,19 +17,31 @@ app.use(helmet());
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
-app.get("/", async (req, res) => {
-  console.log("call strat server");
-
+app.post("/api/getFreeboardData", async (req, res) => {
   try {
-    const fsRef = await firestore.collection("Boards");
+    let sendData = [];
 
-    await fsRef.get().then((response) =>
-      response.forEach((doc) => {
-        console.log(doc.data().title);
-      })
-    );
+    await firestore
+      .collection("Boards")
+      .where("type", "==", "free")
+      .where("isdelete", "==", false)
+      .get()
+      .then((response) =>
+        response.forEach((doc) => {
+          sendData.push({
+            refkey: doc.id,
+            title: doc.data().title,
+            author: doc.data().author,
+            registDate: doc.data().registDate,
+            hit: doc.data().hit,
+          });
+        })
+      );
+
+    return res.json(sendData);
   } catch (e) {
     console.log(e);
+    return [];
   }
 });
 

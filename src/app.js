@@ -17,6 +17,10 @@ app.use(helmet());
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
+app.post("/api/writeBoard", async (req, res) => {
+  console.log(req.body.params.inputData);
+});
+
 app.post("/api/getFreeboardData", async (req, res) => {
   try {
     let sendData = [];

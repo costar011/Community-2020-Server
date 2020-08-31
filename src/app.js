@@ -19,6 +19,50 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 app.post("/api/writeBoard", async (req, res) => {
   console.log(req.body.params.inputData);
+
+  const {
+    body: {
+      params: { inputData },
+    },
+  } = req;
+
+  console.log(inputData);
+
+  const D = new Date();
+
+  let year = D.getFullYear();
+  let month = D.getMonth() + 1;
+  let date = D.getDate();
+
+  month = month < 10 ? "0" + month : month;
+  date = date < 10 ? "0" + date : date;
+
+  console.log(year);
+  console.log(month);
+  console.log(date);
+
+  const resultDate = year + "." + month + "." + date;
+
+  let resultCode = 0;
+
+  try {
+    const fsRef = firestore.collection("Boards");
+
+    await fsRef.add({
+      author: inputData.author,
+      description: inputData.description,
+      hit: parseInt(10),
+      isdelete: Boolean(false),
+      registDate: resultDate,
+      title: inputData.title,
+      type: inputData.type,
+    });
+    resultCode = 1;
+  } catch (e) {
+    console.log(e);
+  }
+
+  return res.json(resultCode);
 });
 
 app.post("/api/getFreeboardData", async (req, res) => {

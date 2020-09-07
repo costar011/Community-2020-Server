@@ -17,6 +17,35 @@ app.use(helmet());
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
+app.post("/api/getDetail", async (req, res) => {
+  const {
+    body: {
+      params: { inputData },
+    },
+  } = req;
+
+  let sendData = {};
+
+  try {
+    await firestore
+      .collection("Boards")
+      .doc(inputData.id)
+      .get()
+      .then(
+        (response) =>
+          (sendData = {
+            title: response.data().title,
+            author: response.data().author,
+            description: response.data().description,
+          })
+      );
+  } catch (e) {
+    console.log(e);
+  }
+
+  return res.json(sendData);
+});
+
 app.post("/api/writeBoard", async (req, res) => {
   console.log(req.body.params.inputData);
 
